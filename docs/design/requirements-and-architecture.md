@@ -201,10 +201,8 @@ document-only changeでも同じ検証とdeploy pathを通します。
 
 - MkDocs設定とsample page。
 - frontmatter検証script。
-- AI artifact生成script。
 - static配信用Dockerfile。
-- Helm chart。
-- CI workflow。
+- ドキュメント運用policy。
 
 ## 未決事項
 
@@ -212,4 +210,5 @@ document-only changeでも同じ検証とdeploy pathを通します。
 - MCP serverを初回releaseに含めるか。
 - CI providerとcontainer registry。
 - deployment namespaceとingress controller。
+- AI artifact生成script。
 - API仕様を手書き、OpenAPI/CRD生成、または併用のどれにするか。

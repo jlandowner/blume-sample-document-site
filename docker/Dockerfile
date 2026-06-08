@@ -7,6 +7,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY mkdocs.yml .
 COPY docs ./docs
+COPY tools ./tools
+RUN python tools/document-validator/validate_docs.py
 RUN mkdocs build --strict
 
 FROM nginx:1.27-alpine
@@ -15,4 +17,3 @@ COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /workspace/site /usr/share/nginx/html
 
 EXPOSE 8080
-
