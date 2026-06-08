@@ -8,7 +8,9 @@ site_dir: site
 theme:
   name: material
   language: ja
+  font: false
   features:
+    - content.code.copy
     - navigation.indexes
     - navigation.sections
     - navigation.top
