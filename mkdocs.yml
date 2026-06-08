@@ -1,0 +1,77 @@
+site_name: K8sプラットフォームドキュメント
+site_description: アプリケーションチームとAIアシスタント向けのKubernetesプラットフォームドキュメント。
+site_url: https://docs.example.internal/
+repo_name: sample-document-site
+docs_dir: docs
+site_dir: site
+
+theme:
+  name: material
+  language: ja
+  features:
+    - navigation.indexes
+    - navigation.sections
+    - navigation.top
+    - search.highlight
+    - search.share
+    - toc.follow
+
+plugins:
+  - search:
+      lang:
+        - ja
+        - en
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - md_in_html
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - toc:
+      permalink: true
+
+nav:
+  - ホーム: index.md
+  - 概要:
+      - プラットフォーム概要: overview/platform-summary.md
+      - 読者と対象範囲: overview/audience-and-scope.md
+  - 環境:
+      - 環境一覧: environments/index.md
+      - 開発環境: environments/dev.md
+      - 本番環境: environments/production.md
+      - ネットワーク: environments/network.md
+  - 制約:
+      - 制約一覧: constraints/index.md
+      - プラットフォーム上限: constraints/platform-limits.md
+      - セキュリティポリシー: constraints/security-policy.md
+      - 命名規約: constraints/naming-conventions.md
+  - 作業手順:
+      - 手順一覧: procedures/index.md
+      - アプリケーションのデプロイ: procedures/deploy-application.md
+      - ロールバック: procedures/rollback.md
+      - Secret管理: procedures/secrets.md
+  - API仕様:
+      - API仕様一覧: api-reference/index.md
+      - プラットフォームAPI: api-reference/platform-api.md
+      - CRDs: api-reference/crds.md
+  - ツール:
+      - ツール一覧: tools/index.md
+      - プラットフォームCLI: tools/cli.md
+      - CIテンプレート: tools/ci-templates.md
+  - アプリチェックリスト:
+      - チェックリスト一覧: app-checklists/index.md
+      - 本番準備チェックリスト: app-checklists/production-readiness.md
+      - デプロイレビュー: app-checklists/deployment-review.md
+  - ランブック:
+      - ランブック一覧: runbooks/index.md
+      - よくある失敗: runbooks/common-failures.md
+  - 運用:
+      - ドキュメント運用ルール: operations/document-operations.md
+  - 設計:
+      - 要件とアーキテクチャ: design/requirements-and-architecture.md
+  - 執筆:
+      - ページテンプレート: authoring/page-template.md

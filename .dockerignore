@@ -1,0 +1,11 @@
+.git
+.github
+site
+ai
+*.pcap
+__pycache__
+.pytest_cache
+.DS_Store
+schemas
+scripts
+helm
