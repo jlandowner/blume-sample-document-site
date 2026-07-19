@@ -6,7 +6,7 @@ type: api-reference
 owner: platform-team
 status: reviewed
 review_cycle: monthly
-last_reviewed: 2026-06-07
+last_reviewed: 2026-07-19
 platform_versions:
   - v1
 audience:

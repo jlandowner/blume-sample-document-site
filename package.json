@@ -1,0 +1,13 @@
+{
+  "name": "sample-document-site-blume-poc",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "blume:prepare": "node tools/blume-poc/prepare-content.mjs",
+    "blume:build": "npm run blume:prepare && blume build --strict",
+    "blume:dev": "blume dev --host 0.0.0.0"
+  },
+  "dependencies": {
+    "blume": "1.0.3"
+  }
+}

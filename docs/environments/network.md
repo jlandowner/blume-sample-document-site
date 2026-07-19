@@ -6,7 +6,7 @@ type: environment
 owner: platform-team
 status: draft
 review_cycle: quarterly
-last_reviewed: 2026-06-07
+last_reviewed: 2026-07-19
 platform_versions:
   - v1
 audience:

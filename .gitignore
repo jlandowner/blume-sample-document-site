@@ -1,7 +1,10 @@
 site/
 ai/
+blume-docs/
+dist/
+.blume/
+node_modules/
 *.pcap
 .DS_Store
 __pycache__/
 .pytest_cache/
-

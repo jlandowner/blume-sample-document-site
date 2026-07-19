@@ -75,5 +75,6 @@ nav:
       - ドキュメント運用ルール: operations/document-operations.md
   - 設計:
       - 要件とアーキテクチャ: design/requirements-and-architecture.md
+      - AIエージェント向けアクセス設計: design/ai-agent-access-plan.md
   - 執筆:
       - ページテンプレート: authoring/page-template.md

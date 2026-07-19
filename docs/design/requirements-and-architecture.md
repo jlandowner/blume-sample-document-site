@@ -6,7 +6,7 @@ type: overview
 owner: platform-team
 status: reviewed
 review_cycle: quarterly
-last_reviewed: 2026-06-07
+last_reviewed: 2026-07-19
 platform_versions:
   - v1
 audience:
@@ -114,7 +114,7 @@ type: procedure
 owner: platform-team
 status: reviewed
 review_cycle: monthly
-last_reviewed: 2026-06-07
+last_reviewed: 2026-07-19
 platform_versions:
   - v1
 audience:
@@ -149,9 +149,11 @@ ai/
   chunks.jsonl
   llms.txt
   llms-full.txt
+  source/docs/**/*.md
+  skills/k8s-platform/SKILL.md
 ```
 
-`docs-index.json` はpage単位のmetadataを持ちます。`chunks.jsonl` はheading単位のtext、heading path、tag、source path、canonical URLを持ちます。RAG最適化は手動ファイルで行わず、Markdownの構造とfrontmatterを直すだけで再生成されるようにします。
+`docs-index.json` はpage単位のmetadataを持ちます。`chunks.jsonl` はheading単位のtext、heading path、tag、source path、canonical URLを持ちます。`source/docs/**/*.md` はMarkdown正本をそのまま配信します。RAG最適化は手動ファイルで行わず、Markdownの構造とfrontmatterを直すだけで再生成されるようにします。
 
 ## MCP access設計
 
@@ -161,8 +163,11 @@ ai/
 
 - `docs://index`: `docs-index.json` を返す。
 - `docs://page/{id}`: page単位のMarkdownを返す。
-- `docs://chunk/{chunk_id}`: chunk単位のtextを返す。
-- `docs://search?q=...`: pageまたはchunk検索結果を返す。
+
+想定tool:
+
+- `docs.search`: score付きpage候補とmatched sectionsを返す。
+- `docs.get_page`: page idからMarkdown正本を返す。
 
 ## ContainerとHelm設計
 
