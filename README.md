@@ -2,7 +2,7 @@
 
 このリポジトリは、Kubernetesプラットフォーム向けドキュメントサイトの具体サンプルです。
 
-`docs/` 配下のMarkdownを正本とします。コンテナビルドの中でMkDocsサイトをビルドし、Nginxで配信します。
+`docs/` 配下のMarkdownを正本とします。デフォルトのビルドはMkDocsサイトを生成し、Nginxで配信します。Blume.dev版とAI/MCP向けartifactは、別ターゲットで試作実装しています。
 
 ## 目的
 
@@ -13,6 +13,10 @@
 ## ローカルでの使い方
 
 ホストにMkDocsやPythonパッケージを入れないでください。Docker経由でビルドして実行します。
+
+### MkDocs版
+
+通常はこちらを使います。`docker/Dockerfile` でMkDocsサイトをビルドし、Nginxで `8080` に配信します。
 
 ```bash
 make image
@@ -36,6 +40,43 @@ make CONTAINER=podman validate
 起動後に確認するURL:
 
 - `http://localhost:8080/`
+
+### Blume.dev版
+
+Blume.dev版を確認する場合だけ、明示的に `blume-*` ターゲットを使います。`docker/Dockerfile.blume` でBlumeのNode serverをビルドし、`4321` に配信します。
+
+```bash
+make blume-image
+make blume-run
+```
+
+Podmanを使う場合:
+
+```bash
+make CONTAINER=podman blume-image
+make CONTAINER=podman blume-run
+make CONTAINER=podman blume-validate
+```
+
+起動後に確認するURL:
+
+- `http://localhost:4321/`
+
+### AI/MCP試作
+
+MkDocs版のビルドでは、同じMarkdown正本から `/ai` 配信用artifactも生成します。独自MCP serverのコンテナを作る場合は次を使います。
+
+```bash
+make mcp-image
+```
+
+現時点のターゲットの使い分け:
+
+| target | 内容 |
+| --- | --- |
+| `make image` / `make run` | MkDocs版 |
+| `make blume-image` / `make blume-run` | Blume.dev版 |
+| `make mcp-image` | `/ai` artifactを読む独自MCP server |
 
 ## 執筆フロー
 
@@ -63,7 +104,7 @@ validatorの仕様は [validate_docs.py](tools/document-validator/validate_docs.
 - 存在しないMarkdown link
 - deprecated pageに `replaced_by` がない状態
 
-AI/RAG向けartifact生成とMCP serverは次の検討事項です。
+AI/RAG向けartifact生成とMCP serverは試作実装です。設計方針は [AIエージェント向けアクセス設計](docs/design/ai-agent-access-plan.md) を参照してください。
 
 ## 主要ドキュメント
 
