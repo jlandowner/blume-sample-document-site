@@ -80,31 +80,33 @@ MCPはBlume内蔵MCP serverを使います。日本語検索を有効にする�
 
 ### MCPクライアント設定
 
-BlumeのMCP endpointはHTTPで公開されます。ローカル起動時の接続先は次の通りです。
+BlumeのMCP endpointはStreamable HTTPで公開されます。ローカル起動時に手動で接続する場合は、次のURLを登録します。
 
 ```text
 http://localhost:4321/mcp
 ```
 
-MCP clientがwell-known discoveryに対応している場合は、site rootを登録します。
+Blume公式の接続例は、HTTP transportを指定して `/mcp` を登録する形式です。このリポジトリをローカル起動した場合は次のようになります。
 
-```text
-http://localhost:4321/
+```bash
+claude mcp add --transport http k8s-platform-docs http://localhost:4321/mcp
 ```
 
-discovery documentは次のURLで確認できます。
+MCP clientがwell-known discoveryに対応している場合は、公開サイトのroot URLを登録します。discovery documentは次のURLで確認できます。
 
 ```text
-http://localhost:4321/.well-known/mcp.json
+https://docs.example.internal/.well-known/mcp.json
 ```
 
-MCP clientが手動設定を要求する場合は、client固有の設定ファイルにHTTP transportとして `/mcp` を登録します。設定キー名はclientごとに異なるため、次の形を目安にしてください。
+ローカルでも `http://localhost:4321/.well-known/mcp.json` は取得できます。ただし、このファイル内のendpoint URLは `blume.config.ts` の `deployment.site` から生成されるため、デフォルトでは `https://docs.example.internal/mcp` を指します。ローカル検証では discovery ではなく、`http://localhost:4321/mcp` を直接登録してください。
+
+MCP clientが手動設定を要求する場合は、client固有の設定ファイルにStreamable HTTP transportとして `/mcp` を登録します。設定キー名はclientごとに異なるため、次の形を目安にしてください。
 
 ```json
 {
   "mcpServers": {
     "k8s-platform-docs": {
-      "type": "http",
+      "transport": "streamable-http",
       "url": "http://localhost:4321/mcp"
     }
   }
@@ -126,6 +128,14 @@ curl -s http://localhost:4321/mcp \
 | --- | --- |
 | `search_docs` | queryから関連ページ候補を検索する |
 | `get_page` | routeを指定してMarkdown本文を取得する |
+| `list_pages` | ページ一覧を取得する |
+| `get_navigation` | navigation treeを取得する |
+
+参照:
+
+- [Blume公式サイト](https://useblume.dev/) は、MCP serverが `search_docs`、`get_page`、`list_pages`、`get_navigation` の4つのread-only toolsを公開し、`claude mcp add --transport http ... /mcp` で接続する例を示しています。
+- [MCP Streamable HTTP transport仕様](https://modelcontextprotocol.io/specification/2025-06-18/basic/transports) は、MCP endpointがHTTP POSTを受け、`Accept: application/json, text/event-stream` を使うことを定義しています。
+- Blumeが生成するserver cardは `/.well-known/mcp/server-card.json` で確認できます。
 
 ## 執筆フロー
 
