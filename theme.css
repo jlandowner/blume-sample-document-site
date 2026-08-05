@@ -1,4 +1,12 @@
-/* Blume caps code blocks at 24rem by default. This docs site shows full examples. */
-.prose :where(pre:not(.twoslash, .twoslash pre, blume-panel-tabs *) > code) {
-  max-height: none;
+/*
+ * Code blocks use Blume's default 24rem height cap.
+ * Add className="docs-code-full" to page content or a specific block to show full examples.
+ */
+.docs-code-full {
+  --docs-code-max-height: none;
+}
+
+.docs-code-full
+  :where(pre:not(.twoslash, .twoslash pre, blume-panel-tabs *) > code) {
+  max-height: var(--docs-code-max-height);
 }
