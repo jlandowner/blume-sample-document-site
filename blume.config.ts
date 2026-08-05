@@ -5,6 +5,10 @@ export default defineConfig({
   description:
     "アプリケーションチームとAIエージェント向けのKubernetesプラットフォームドキュメント。",
   feedback: false,
+  i18n: {
+    defaultLocale: "ja",
+    locales: [{ code: "ja", label: "日本語" }],
+  },
   content: {
     root: "blume-docs",
   },

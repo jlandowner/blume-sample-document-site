@@ -24,7 +24,7 @@ canonical_url: /design/ai-agent-access-plan/
 
 AIエージェントが、K8sプラットフォームドキュメントを安全かつ安定して検索・取得できるようにします。
 
-人間向けのMkDocsサイトはそのまま維持し、同じMarkdown正本からAI向けartifactを生成します。AIエージェントはMCP server経由でartifactを読み、必要なpageを検索・取得します。
+人間向けのMkDocsサイトはそのまま維持しつつ、MCP accessはBlume.dev版の内蔵MCP serverへ寄せます。AIエージェントはBlume MCPの検索・取得toolを使い、必要なpageを検索・取得します。
 
 ## 外部事例からの確認
 
@@ -42,19 +42,17 @@ GKE skillの例では、`SKILL.md` にQuick StartとReference Directoryを置き
 
 ## 採用方針
 
-案2の **MCP Docs Server** を先に作ります。内部実装は案1のstatic artifactを読む形にします。
+案2の **MCP Docs Server** は、独自Python serverではなくBlume内蔵MCP serverを採用します。内部検索はBlumeのOrama検索を使い、ブラウザ検索とMCP検索の挙動を揃えます。
 
 ```text
 Markdown docs
   -> validator
-  -> ai artifact generator
-  -> MkDocs site
-  -> docs-web container
-  -> docs-mcp container
+  -> Blume content preparation
+  -> Blume Node server
   -> AI agent
 ```
 
-MCP serverはMarkdownを直接parseしません。build時に生成されたartifactを読みます。これにより、AI用の検索・取得ロジックはsite buildと同じ正本から再現可能になります。
+MCP serverはBlumeのbuild outputに含まれます。これにより、AI用の検索・取得ロジックはsite buildと同じ正本から再現可能になります。
 
 ## 境界
 
@@ -62,11 +60,11 @@ MCP serverはMarkdownを直接parseしません。build時に生成されたarti
 
 | 境界 | 責務 | 配布方法 |
 | --- | --- | --- |
-| `/ai` | build済みの機械向けartifactを配信する | docs-webのstatic path |
-| MCP | `/ai` artifactを読み、agent向けの検索・取得APIを提供する | docs-mcp container |
+| `/ai` | MkDocs版で生成する機械向けstatic artifact | docs-webのstatic path |
+| MCP | agent向けの検索・取得APIを提供する | Blume Node serverの `/mcp` |
 | Skill | agentに「いつ、どのMCP toolを使うか」を教える薄い入口 | `/ai/skills/k8s-platform/SKILL.md` |
 
-Skillには全文を詰め込みません。検索結果のmatched sectionsで当たりを付け、本文はMCP経由でpage単位に取得します。
+Skillには全文を詰め込みません。検索結果で当たりを付け、本文はMCP経由でpage単位に取得します。
 
 ## 生成artifact
 
@@ -92,14 +90,13 @@ WHEN: deploy, rollback, secret, ingress, quota, production readiness, platform A
 
 ## MCP resources
 
-MCP resourcesは、agentが「読む」ための安定URIとして提供します。
+Blume MCPでは、agentが読むためのtoolをHTTP endpoint `/mcp` で提供します。
 
-| resource | 内容 |
-| --- | --- |
-| `docs://index` | `docs-index.json` |
-| `docs://llms` | `llms.txt` |
-| `docs://page/{id}` | `source/docs/**/*.md` から読んだpage単位のMarkdown正本 |
-| `docs://skill/k8s-platform` | 静的に管理された `SKILL.md` |
+代表的な取得対象:
+
+- page一覧
+- navigation
+- page単位のMarkdown本文
 
 ## MCP tools
 
@@ -107,10 +104,12 @@ MCP toolsは、agentが「探す」ために使います。
 
 | tool | 入力 | 出力 |
 | --- | --- | --- |
-| `docs.search` | `query`, optional `type`, `tags`, `audience` | score付きpage候補とmatched sections |
-| `docs.get_page` | `id` | Markdown本文、metadata、canonical URL |
+| `search_docs` | `query`, optional `limit` | page候補、route、title、excerpt、URL |
+| `get_page` | `route` | Markdown本文 |
+| `list_pages` | なし | page一覧 |
+| `get_navigation` | なし | navigation tree |
 
-初期検索は軽量なkeyword searchで実装します。vector searchやembeddingは第2段階にします。
+検索はBlumeのOrama検索を使います。日本語検索のため、`blume.config.ts` で `i18n.defaultLocale: "ja"` を設定します。
 
 ## MCP prompts
 
@@ -131,12 +130,12 @@ docs-web
   - MkDocs static siteを配信する。
   - /ai/* artifactを配信する。
 
-docs-mcp
-  - /app/ai artifactを読み込む。
-  - Streamable HTTPまたはstdioでMCP serverを公開する。
+blume-docs
+  - Blume siteを配信する。
+  - /mcp でBlume内蔵MCP serverを公開する。
 ```
 
-local developmentではstdio、cluster deploymentではStreamable HTTPを優先します。
+local developmentとcluster deploymentのどちらでも、Blume Node serverのHTTP MCP endpointを使います。
 
 ## 実装ステップ
 
@@ -144,8 +143,8 @@ local developmentではstdio、cluster deploymentではStreamable HTTPを優先�
 2. `docs-index.json`、`chunks.jsonl`、`llms.txt`、`llms-full.txt` を生成する。
 3. 静的な `tools/ai-artifacts/skills/k8s-platform/SKILL.md` を `/ai/skills` にコピーする。
 4. `docs-web` imageに `/ai/*` を含める。
-5. `docs-mcp` serverを追加し、artifactを読む。
-6. `docs.search`、`docs.get_page` を先に実装する。
+5. Blume内蔵MCP serverを有効化する。
+6. `search_docs`、`get_page`、`list_pages`、`get_navigation` を検証する。
 7. 必要になった場合だけ、追加toolやpromptsを検討する。
 8. 生成artifactとMCP tool responseをvalidatorで検証する。
 
@@ -160,6 +159,6 @@ local developmentではstdio、cluster deploymentではStreamable HTTPを優先�
 
 ## 判断
 
-最初に作るべきものは、artifact generatorとMCP Docs Serverです。GoogleのAgent Skills構成と同じく、agentが読む入口は小さく、詳細知識はtopic別referenceや既存Markdown pageへ分離します。
+最初に作るべきものは、Blume MCPを有効化したドキュメントサイトです。GoogleのAgent Skills構成と同じく、agentが読む入口は小さく、詳細知識はtopic別referenceや既存Markdown pageへ分離します。
 
 この方針なら、人間向けサイト、agent skill、MCP resource、RAG chunkがすべて同じMarkdown正本から生成されます。

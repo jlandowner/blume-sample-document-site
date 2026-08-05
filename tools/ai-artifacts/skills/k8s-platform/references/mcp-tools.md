@@ -1,7 +1,7 @@
 # MCP tools
 
-`docs.search` はpage単位の検索に使います。検索結果には `page_id`、page metadata、`matched_sections` が含まれます。
+`search_docs` はpage単位の検索に使います。検索結果には `route`、`title`、`excerpt`、`url` が含まれます。
 
-`docs.get_page` は `page_id` を指定してMarkdown正本を取得するために使います。
+`get_page` は `route` を指定してMarkdown正本を取得するために使います。
 
-MCP serverの内部実装は `/ai/docs-index.json`、`/ai/chunks.jsonl`、`/ai/source/docs/*.md` を読みます。
+MCP serverはBlume内蔵MCP serverを使います。ブラウザ検索と同じBlumeのOrama検索を使うため、日本語検索には `blume.config.ts` の `i18n.defaultLocale: "ja"` が必要です。

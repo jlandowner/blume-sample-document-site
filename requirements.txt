@@ -1,3 +1,2 @@
 mkdocs-material==9.5.49
-mcp==1.27.2
 PyYAML==6.0.2

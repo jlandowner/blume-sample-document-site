@@ -21,16 +21,16 @@ description: K8sプラットフォームの環境、制約、手順、API、ツ�
 
 ## HOW
 
-1. まず `docs.search` で関連pageとmatched sectionsを探します。
-2. 正本が必要な場合は `docs.get_page` でpage全体を取得します。
-3. production releaseやreviewでは、検索結果からchecklist pageを選び、`docs.get_page` で正本を取得します。
+1. まず `search_docs` で関連pageを探します。
+2. 正本が必要な場合は `get_page` にrouteを渡してpage全体を取得します。
+3. production releaseやreviewでは、検索結果からchecklist pageを選び、`get_page` で正本を取得します。
 4. 回答では `canonical_url` とpage titleを添えます。
 
 ## MCP
 
-このskillは、MCP Docs Serverが提供する次のtools/resourcesを前提にします。
+このskillは、Blume内蔵MCP serverが提供する次のtoolsを前提にします。
 
-- `docs.search`
-- `docs.get_page`
-- `docs://index`
-- `docs://llms`
+- `search_docs`
+- `get_page`
+- `list_pages`
+- `get_navigation`

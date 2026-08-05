@@ -157,17 +157,14 @@ ai/
 
 ## MCP access設計
 
-初期状態ではstatic artifactを配信します。interactive retrievalやtool連携が必要になったら、optional containerとしてMCP serverを追加します。
-
-想定resource:
-
-- `docs://index`: `docs-index.json` を返す。
-- `docs://page/{id}`: page単位のMarkdownを返す。
+初期状態ではstatic artifactを配信します。interactive retrievalやtool連携はBlume.dev版の内蔵MCP serverで提供します。
 
 想定tool:
 
-- `docs.search`: score付きpage候補とmatched sectionsを返す。
-- `docs.get_page`: page idからMarkdown正本を返す。
+- `search_docs`: score付きpage候補を返す。
+- `get_page`: routeからMarkdown正本を返す。
+- `list_pages`: page一覧を返す。
+- `get_navigation`: navigation treeを返す。
 
 ## ContainerとHelm設計
 
@@ -178,9 +175,9 @@ docs-web
   - MkDocsのstatic outputを配信する。
   - /ai/docs-index.json、/ai/chunks.jsonl、/ai/llms.txtを配信する。
 
-docs-mcp optional
-  - 同じgenerated artifactを読む。
-  - MCP resourceを公開する。
+blume-docs
+  - Blume siteを配信する。
+  - /mcp でBlume内蔵MCP serverを公開する。
 ```
 
 Helm valuesでimage、replica数、ingress、base URL、認証方式、resource request/limit、cache header、MCP containerの有効化を設定できるようにします。

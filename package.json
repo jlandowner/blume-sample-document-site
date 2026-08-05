@@ -8,6 +8,6 @@
     "blume:dev": "blume dev --host 0.0.0.0"
   },
   "dependencies": {
-    "blume": "1.0.3"
+    "blume": "1.3.1"
   }
 }

@@ -87,7 +87,6 @@ def page_record(page: Page) -> dict[str, Any]:
         "audience": data["audience"],
         "tags": data["tags"],
         "headings": extract_headings(page.body),
-        "mcp_resource": f"docs://page/{data['id']}",
     }
 
 
@@ -153,7 +152,7 @@ def write_llms_txt(output_dir: Path, pages: list[Page]) -> None:
         "# K8sプラットフォームドキュメント",
         "",
         "社内Kubernetesプラットフォームの環境、制約、手順、API、ツール、チェックリスト、ランブックをまとめたドキュメントです。",
-        "AIエージェントは必要に応じてMCP toolsを使い、該当pageを検索・取得してください。",
+        "AIエージェントは必要に応じてBlume MCP toolsを使い、該当pageを検索・取得してください。",
         "",
     ]
 
@@ -166,7 +165,7 @@ def write_llms_txt(output_dir: Path, pages: list[Page]) -> None:
         lines.append("")
         for page in pages_by_type[page_type]:
             data = page.metadata
-            lines.append(f"- [{data['title']}]({data['canonical_url']}): {data['description']} (`docs://page/{data['id']}`)")
+            lines.append(f"- [{data['title']}]({data['canonical_url']}): {data['description']}")
         lines.append("")
 
     (output_dir / "llms.txt").write_text("\n".join(lines), encoding="utf-8")
@@ -176,7 +175,7 @@ def write_llms_full_txt(output_dir: Path, pages: list[Page]) -> None:
     parts = ["# K8sプラットフォームドキュメント全文", ""]
     for page in pages:
         data = page.metadata
-        parts.append(f"<!-- source: docs/{page.relative_path.as_posix()} id: {data['id']} resource: docs://page/{data['id']} -->")
+        parts.append(f"<!-- source: docs/{page.relative_path.as_posix()} id: {data['id']} route: {data['canonical_url']} -->")
         parts.append(page.body.strip())
         parts.append("")
     (output_dir / "llms-full.txt").write_text("\n".join(parts), encoding="utf-8")
