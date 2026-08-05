@@ -23,7 +23,7 @@ COPY blume.config.ts .
 COPY theme.css .
 COPY docs ./docs
 COPY public ./public
-COPY tools/blume-poc ./tools/blume-poc
+COPY scripts ./scripts
 RUN npm run blume:build
 
 # -----------------------------------------------------------------------------

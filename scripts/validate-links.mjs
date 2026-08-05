@@ -1,6 +1,11 @@
 import { readdir, readFile, stat } from "node:fs/promises";
 import { extname, join, relative, sep } from "node:path";
 
+/*
+ * ドキュメントのリンク検証。
+ * 1. Markdown/MDX 内の相対 .md リンクを禁止し、Blume のルート形式を強制する。
+ * 2. ビルド済み HTML の内部リンクが実在するページまたは静的ファイルへ解決できるか確認する。
+ */
 const siteOrigin = "https://docs.example.internal";
 const docsDir = "docs";
 const distDir = "dist/client";
@@ -8,6 +13,7 @@ const ignoredSchemes = /^(mailto|tel|javascript|data):/i;
 
 const errors = [];
 
+// 指定ディレクトリ配下のファイルを再帰的に収集する共通処理。
 async function walkFiles(root, predicate) {
   const files = [];
 
@@ -27,10 +33,12 @@ async function walkFiles(root, predicate) {
   return files;
 }
 
+// OS 依存の区切り文字を URL 用の / に揃える。
 function toPosix(path) {
   return path.split(sep).join("/");
 }
 
+// dist/client 内の HTML ファイルパスから、実サイト上のルートを復元する。
 function pageUrlForHtml(htmlPath) {
   const rel = toPosix(relative(distDir, htmlPath));
   if (rel === "index.html") return "/";
@@ -47,6 +55,7 @@ async function pathExists(path) {
   }
 }
 
+// 生成済み HTML と静的ファイルをもとに、有効な内部ルート一覧を作る。
 async function buildRouteSet() {
   const routes = new Set(["/"]);
   const files = await walkFiles(distDir);
@@ -70,6 +79,7 @@ async function buildRouteSet() {
   return routes;
 }
 
+// HTML から href 属性だけを抽出する。リンク検証用途なので HTML パーサまでは使わない。
 function extractHrefs(html) {
   const hrefs = [];
   const pattern = /\bhref=(["'])(.*?)\1/gis;
@@ -80,6 +90,7 @@ function extractHrefs(html) {
   return hrefs;
 }
 
+// 執筆時に壊れやすい相対 Markdown リンクを禁止する。
 async function validateMarkdownLinks() {
   const contentFiles = await walkFiles(docsDir, (path) =>
     [".md", ".mdx"].includes(extname(path)),
@@ -97,6 +108,7 @@ async function validateMarkdownLinks() {
   }
 }
 
+// ビルド後の HTML に含まれる内部リンク切れを検出する。
 async function validateRenderedHtmlLinks(routes) {
   const htmlFiles = await walkFiles(distDir, (path) => extname(path) === ".html");
 

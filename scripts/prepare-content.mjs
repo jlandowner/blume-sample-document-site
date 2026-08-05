@@ -2,7 +2,13 @@ import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+/*
+ * Blume に渡す前処理。
+ * docs 配下の Markdown/MDX を blume-docs へコピーし、Blume が扱う frontmatter を
+ * title と description に絞る。既存ページの H1 と Blume のページタイトルが重複表示
+ * されないよう、frontmatter の title と同じ先頭 H1 も取り除く。
+ */
+const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
 const sourceDir = join(repoRoot, "docs");
 const outputDir = join(repoRoot, "blume-docs");
 
@@ -21,6 +27,7 @@ const removeDuplicateTitleHeading = (body, title) => {
   return body.replace(pattern, "");
 };
 
+// docs 配下の .md と .mdx を再帰的に収集する。
 const contentFiles = async (dir) => {
   const entries = await readdir(dir, { withFileTypes: true });
   const files = [];
@@ -40,6 +47,7 @@ const contentFiles = async (dir) => {
   return files;
 };
 
+// frontmatter を Blume 用に正規化し、重複する先頭 H1 を削除する。
 const sanitizeMarkdown = (text) => {
   if (!text.startsWith("---\n")) {
     return text;
@@ -67,6 +75,7 @@ const sanitizeMarkdown = (text) => {
   return `${lines.join("\n")}${removeDuplicateTitleHeading(body, title)}`;
 };
 
+// blume-docs は生成物なので、毎回作り直して古いページが残らないようにする。
 await rm(outputDir, { force: true, recursive: true });
 
 for (const sourcePath of await contentFiles(sourceDir)) {

@@ -1,6 +1,11 @@
 import { spawn } from "node:child_process";
 import { setTimeout as delay } from "node:timers/promises";
 
+/*
+ * Blume の MCP search 動作確認。
+ * ビルド済みの Node server を一時起動し、/mcp の search_docs が日本語クエリで
+ * 期待する代表ページを返すことを確認する。
+ */
 const endpoint = "http://127.0.0.1:4321/mcp";
 const cases = [
   { query: "本番", expectedRoute: "/environments/production" },
@@ -10,6 +15,8 @@ const cases = [
 ];
 
 let output = "";
+
+// テスト専用にローカルホストへ Blume server を起動する。
 const server = spawn("node", ["dist/server/entry.mjs"], {
   env: { ...process.env, HOST: "127.0.0.1", PORT: "4321" },
   stdio: ["ignore", "pipe", "pipe"],
@@ -22,6 +29,7 @@ server.stderr.on("data", (chunk) => {
   output += chunk;
 });
 
+// MCP endpoint が応答可能になるまで短時間ポーリングする。
 async function waitForMcp() {
   for (let i = 0; i < 60; i += 1) {
     try {
@@ -35,6 +43,7 @@ async function waitForMcp() {
   throw new Error(`MCP endpoint did not become ready.\n${output}`);
 }
 
+// MCP の search_docs tool を JSON-RPC over HTTP で呼び出す。
 async function callSearch(query) {
   const response = await fetch(endpoint, {
     method: "POST",
@@ -69,6 +78,7 @@ async function callSearch(query) {
 try {
   await waitForMcp();
 
+  // 各クエリで代表ルートが検索結果に含まれることを確認する。
   const results = [];
   for (const testCase of cases) {
     const hits = await callSearch(testCase.query);
@@ -86,6 +96,7 @@ try {
 
   console.log(JSON.stringify({ status: "ok", results }, null, 2));
 } finally {
+  // テスト用 server は成功・失敗にかかわらず停止する。
   server.kill("SIGTERM");
   await delay(200);
   if (!server.killed) {
