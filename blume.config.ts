@@ -98,7 +98,7 @@ export default defineConfig({
       },
       {
         label: "執筆",
-        items: ["/authoring/page-template"],
+        items: ["/authoring/page-template", "/authoring/markdown-syntax-test"],
       },
     ],
   },
