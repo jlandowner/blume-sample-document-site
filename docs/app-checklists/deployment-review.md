@@ -23,15 +23,15 @@ canonical_url: /app-checklists/deployment-review/
 
 | チェック | 参照 |
 | --- | --- |
-| change requestが承認済み | [アプリケーションのデプロイ](../procedures/deploy-application.md) |
-| image tagがrelease noteと一致している | [アプリケーションのデプロイ](../procedures/deploy-application.md) |
-| manifest validationが成功している | [プラットフォーム上限](../constraints/platform-limits.md) |
-| Secret変更がreview済み | [Secret管理](../procedures/secrets.md) |
+| change requestが承認済み | [アプリケーションのデプロイ](/procedures/deploy-application) |
+| image tagがrelease noteと一致している | [アプリケーションのデプロイ](/procedures/deploy-application) |
+| manifest validationが成功している | [プラットフォーム上限](/constraints/platform-limits) |
+| Secret変更がreview済み | [Secret管理](/procedures/secrets) |
 
 ## デプロイ後
 
 | チェック | 参照 |
 | --- | --- |
-| Deployment statusがhealthy | [アプリケーションのデプロイ](../procedures/deploy-application.md) |
-| error rateが通常範囲内 | [よくある失敗](../runbooks/common-failures.md) |
-| rollback経路が利用可能 | [ロールバック](../procedures/rollback.md) |
+| Deployment statusがhealthy | [アプリケーションのデプロイ](/procedures/deploy-application) |
+| error rateが通常範囲内 | [よくある失敗](/runbooks/common-failures) |
+| rollback経路が利用可能 | [ロールバック](/procedures/rollback) |

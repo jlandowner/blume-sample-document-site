@@ -20,5 +20,5 @@ canonical_url: /app-checklists/
 
 | チェックリスト | 用途 |
 | --- | --- |
-| [本番準備チェックリスト](production-readiness.md) | 本番開始前に必要な確認 |
-| [デプロイレビュー](deployment-review.md) | production deployごとの確認 |
+| [本番準備チェックリスト](/app-checklists/production-readiness) | 本番開始前に必要な確認 |
+| [デプロイレビュー](/app-checklists/deployment-review) | production deployごとの確認 |

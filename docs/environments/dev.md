@@ -47,5 +47,5 @@ dev環境はアプリケーションの開発、結合検証、CIからの自動
 
 ## 関連ページ
 
-- [アプリケーションのデプロイ](../procedures/deploy-application.md)
-- [命名規約](../constraints/naming-conventions.md)
+- [アプリケーションのデプロイ](/procedures/deploy-application)
+- [命名規約](/constraints/naming-conventions)

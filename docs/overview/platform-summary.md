@@ -46,10 +46,10 @@ canonical_url: /overview/platform-summary/
 - hostNetworkを必要とするpod
 - Node local storageに依存する構成
 
-詳細な禁止事項は [プラットフォーム上限](../constraints/platform-limits.md) を参照してください。
+詳細な禁止事項は [プラットフォーム上限](/constraints/platform-limits) を参照してください。
 
 ## 関連ページ
 
-- [開発環境](../environments/dev.md)
-- [本番環境](../environments/production.md)
-- [アプリケーションのデプロイ](../procedures/deploy-application.md)
+- [開発環境](/environments/dev)
+- [本番環境](/environments/production)
+- [アプリケーションのデプロイ](/procedures/deploy-application)

@@ -41,7 +41,7 @@ kubectl -n app-payments-invoice-prod logs <pod-name>
 | --- | --- |
 | image tagが存在しない | image URLとtagを確認する |
 | resource quotaを超えている | requestsを下げるかquota変更を依頼する |
-| Secret keyが不足している | [Secret管理](../procedures/secrets.md) を確認する |
+| Secret keyが不足している | [Secret管理](/procedures/secrets) を確認する |
 | probeが失敗している | readiness/liveness probe pathを確認する |
 
 ## Ingress不通

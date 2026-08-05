@@ -47,5 +47,5 @@ production環境はユーザー向け本番workloadを運用する環境です�
 
 ## 関連ページ
 
-- [本番準備チェックリスト](../app-checklists/production-readiness.md)
-- [セキュリティポリシー](../constraints/security-policy.md)
+- [本番準備チェックリスト](/app-checklists/production-readiness)
+- [セキュリティポリシー](/constraints/security-policy)

@@ -24,6 +24,6 @@ canonical_url: /constraints/
 
 | 制約 | 概要 |
 | --- | --- |
-| [プラットフォーム上限](platform-limits.md) | workload、resource、権限の上限 |
-| [セキュリティポリシー](security-policy.md) | Secret、公開、権限、imageの規則 |
-| [命名規約](naming-conventions.md) | namespace、release、labelの命名 |
+| [プラットフォーム上限](/constraints/platform-limits) | workload、resource、権限の上限 |
+| [セキュリティポリシー](/constraints/security-policy) | Secret、公開、権限、imageの規則 |
+| [命名規約](/constraints/naming-conventions) | namespace、release、labelの命名 |

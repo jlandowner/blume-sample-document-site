@@ -20,6 +20,6 @@ canonical_url: /procedures/
 
 | 手順 | 用途 |
 | --- | --- |
-| [アプリケーションのデプロイ](deploy-application.md) | アプリケーションをdevまたはproductionへデプロイする |
-| [ロールバック](rollback.md) | 直前のreleaseへ戻す |
-| [Secret管理](secrets.md) | Secretを作成、更新、参照する |
+| [アプリケーションのデプロイ](/procedures/deploy-application) | アプリケーションをdevまたはproductionへデプロイする |
+| [ロールバック](/procedures/rollback) | 直前のreleaseへ戻す |
+| [Secret管理](/procedures/secrets) | Secretを作成、更新、参照する |

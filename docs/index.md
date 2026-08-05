@@ -26,12 +26,12 @@ canonical_url: /
 
 | 目的 | ページ |
 | --- | --- |
-| プラットフォームの全体像を知る | [プラットフォーム概要](overview/platform-summary.md) |
-| 環境差分を確認する | [環境一覧](environments/index.md) |
-| アプリが守るべき制約を確認する | [制約一覧](constraints/index.md) |
-| アプリをデプロイする | [アプリケーションのデプロイ](procedures/deploy-application.md) |
-| 本番リリース前に確認する | [本番準備チェックリスト](app-checklists/production-readiness.md) |
-| 失敗時の切り分けを行う | [よくある失敗](runbooks/common-failures.md) |
+| プラットフォームの全体像を知る | [プラットフォーム概要](/overview/platform-summary) |
+| 環境差分を確認する | [環境一覧](/environments) |
+| アプリが守るべき制約を確認する | [制約一覧](/constraints) |
+| アプリをデプロイする | [アプリケーションのデプロイ](/procedures/deploy-application) |
+| 本番リリース前に確認する | [本番準備チェックリスト](/app-checklists/production-readiness) |
+| 失敗時の切り分けを行う | [よくある失敗](/runbooks/common-failures) |
 
 ## ドキュメントの読み方
 

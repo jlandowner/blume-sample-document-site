@@ -41,5 +41,5 @@ canonical_url: /environments/network/
 
 ## 関連ページ
 
-- [セキュリティポリシー](../constraints/security-policy.md)
-- [アプリケーションのデプロイ](../procedures/deploy-application.md)
+- [セキュリティポリシー](/constraints/security-policy)
+- [アプリケーションのデプロイ](/procedures/deploy-application)

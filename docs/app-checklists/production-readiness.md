@@ -24,14 +24,14 @@ canonical_url: /app-checklists/production-readiness/
 
 | チェック | 必要な証跡 | 参照 |
 | --- | --- | --- |
-| Namespaceが命名規約に従っている | Namespace名 | [命名規約](../constraints/naming-conventions.md) |
-| replica数が2以上である | Deployment manifest | [本番環境](../environments/production.md) |
-| readiness probeがある | Deployment manifest | [本番環境](../environments/production.md) |
-| resource requestsとlimitsが設定されている | Deployment manifest | [プラットフォーム上限](../constraints/platform-limits.md) |
-| image tagがimmutableである | Image URL | [プラットフォーム上限](../constraints/platform-limits.md) |
-| Secret値がGitに含まれていない | repository scan結果 | [セキュリティポリシー](../constraints/security-policy.md) |
-| public ingressのsecurity reviewが完了している | review ticket | [セキュリティポリシー](../constraints/security-policy.md) |
-| rollback commandを検証済み | CI証跡 | [ロールバック](../procedures/rollback.md) |
+| Namespaceが命名規約に従っている | Namespace名 | [命名規約](/constraints/naming-conventions) |
+| replica数が2以上である | Deployment manifest | [本番環境](/environments/production) |
+| readiness probeがある | Deployment manifest | [本番環境](/environments/production) |
+| resource requestsとlimitsが設定されている | Deployment manifest | [プラットフォーム上限](/constraints/platform-limits) |
+| image tagがimmutableである | Image URL | [プラットフォーム上限](/constraints/platform-limits) |
+| Secret値がGitに含まれていない | repository scan結果 | [セキュリティポリシー](/constraints/security-policy) |
+| public ingressのsecurity reviewが完了している | review ticket | [セキュリティポリシー](/constraints/security-policy) |
+| rollback commandを検証済み | CI証跡 | [ロールバック](/procedures/rollback) |
 
 ## 判定
 

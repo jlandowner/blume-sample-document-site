@@ -22,7 +22,7 @@ canonical_url: /api-reference/
 
 | 仕様 | 説明 |
 | --- | --- |
-| [プラットフォームAPI](platform-api.md) | platform toolが利用するdeployment、release、status API |
-| [CRDs](crds.md) | プラットフォームが提供するCustom Resource |
+| [プラットフォームAPI](/api-reference/platform-api) | platform toolが利用するdeployment、release、status API |
+| [CRDs](/api-reference/crds) | プラットフォームが提供するCustom Resource |
 
 生成された仕様書は、手書きの運用ガイドとは分けてcommitします。

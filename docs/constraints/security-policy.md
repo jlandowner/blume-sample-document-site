@@ -47,5 +47,5 @@ public ingressを作成する場合は、次の条件をすべて満たしてく
 
 ## 関連ページ
 
-- [Secret管理手順](../procedures/secrets.md)
-- [本番準備チェックリスト](../app-checklists/production-readiness.md)
+- [Secret管理手順](/procedures/secrets)
+- [本番準備チェックリスト](/app-checklists/production-readiness)

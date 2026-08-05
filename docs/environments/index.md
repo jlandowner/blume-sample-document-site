@@ -35,4 +35,4 @@ canonical_url: /environments/
 | Secret更新 | app-team可 | 承認後 |
 | resource quota | 緩い | 厳格 |
 
-詳細は [開発環境](dev.md) と [本番環境](production.md) を参照してください。
+詳細は [開発環境](/environments/dev) と [本番環境](/environments/production) を参照してください。

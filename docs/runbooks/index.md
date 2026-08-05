@@ -21,4 +21,4 @@ canonical_url: /runbooks/
 
 | ランブック | 症状 |
 | --- | --- |
-| [よくある失敗](common-failures.md) | Pod起動失敗、image pull error、ingress不通 |
+| [よくある失敗](/runbooks/common-failures) | Pod起動失敗、image pull error、ingress不通 |

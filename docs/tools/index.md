@@ -20,5 +20,5 @@ canonical_url: /tools/
 
 | ツール | 用途 |
 | --- | --- |
-| [プラットフォームCLI](cli.md) | アプリケーションの検証、デプロイ、状態確認、ロールバック |
-| [CIテンプレート](ci-templates.md) | 検証とデプロイの標準CI job |
+| [プラットフォームCLI](/tools/cli) | アプリケーションの検証、デプロイ、状態確認、ロールバック |
+| [CIテンプレート](/tools/ci-templates) | 検証とデプロイの標準CI job |
