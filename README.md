@@ -78,6 +78,55 @@ MCPはBlume内蔵MCP serverを使います。日本語検索を有効にする�
 
 サーバは1コンテナです。Nginxコンテナ、Python MCP sidecar、別検索サーバは使いません。
 
+### MCPクライアント設定
+
+BlumeのMCP endpointはHTTPで公開されます。ローカル起動時の接続先は次の通りです。
+
+```text
+http://localhost:4321/mcp
+```
+
+MCP clientがwell-known discoveryに対応している場合は、site rootを登録します。
+
+```text
+http://localhost:4321/
+```
+
+discovery documentは次のURLで確認できます。
+
+```text
+http://localhost:4321/.well-known/mcp.json
+```
+
+MCP clientが手動設定を要求する場合は、client固有の設定ファイルにHTTP transportとして `/mcp` を登録します。設定キー名はclientごとに異なるため、次の形を目安にしてください。
+
+```json
+{
+  "mcpServers": {
+    "k8s-platform-docs": {
+      "type": "http",
+      "url": "http://localhost:4321/mcp"
+    }
+  }
+}
+```
+
+接続確認は `search_docs` toolで行います。
+
+```bash
+curl -s http://localhost:4321/mcp \
+  -H 'accept: application/json, text/event-stream' \
+  -H 'content-type: application/json' \
+  --data '{"id":1,"jsonrpc":"2.0","method":"tools/call","params":{"name":"search_docs","arguments":{"query":"デプロイ","limit":5}}}'
+```
+
+代表的なtool:
+
+| tool | 用途 |
+| --- | --- |
+| `search_docs` | queryから関連ページ候補を検索する |
+| `get_page` | routeを指定してMarkdown本文を取得する |
+
 ## 執筆フロー
 
 1. `docs/` 配下のMarkdownを編集する。
