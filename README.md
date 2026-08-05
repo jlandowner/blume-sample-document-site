@@ -2,31 +2,22 @@
 
 このリポジトリは、Kubernetesプラットフォーム向けドキュメントサイトの具体サンプルです。
 
-`docs/` 配下のMarkdownを正本とします。デフォルトのビルドはMkDocsサイトを生成し、Nginxで配信します。Blume.dev版は、人間向けサイトとBlume内蔵MCP serverを同じNode serverで配信するターゲットとして試作実装しています。
+`docs/` 配下のMarkdownを正本とし、Blumeで人間向けサイト、`llms.txt`、MCP endpointを生成します。サーバコンテナは1つだけです。BlumeのNode serverがサイトと `/mcp` を同時に配信します。
 
 ## 目的
 
 - 人間が読みやすいプラットフォームドキュメントサイトを作る。
-- 依存ライブラリのインストールとビルドをコンテナ内に閉じる。
-- Blume内蔵MCP serverからも検索しやすいように、Markdown構造とfrontmatterを整理しておく。
+- AIエージェントがMCP経由で同じドキュメントを検索・取得できるようにする。
+- 依存ライブラリのインストール、ビルド、検証をコンテナ内に閉じる。
+- Markdownの構造とfrontmatterを直すだけで、検索とAI向けindexが更新される状態にする。
 
 ## ローカルでの使い方
 
-ホストにMkDocsやPythonパッケージを入れないでください。Docker経由でビルドして実行します。
-
-### MkDocs版
-
-通常はこちらを使います。`docker/Dockerfile` でMkDocsサイトをビルドし、Nginxで `8080` に配信します。
+ホストにNode.js packageを入れないでください。DockerまたはPodman経由でビルドして実行します。
 
 ```bash
 make image
 make run
-```
-
-ドキュメント検証だけを実行する場合:
-
-```bash
-make validate
 ```
 
 Podmanを使う場合:
@@ -34,76 +25,77 @@ Podmanを使う場合:
 ```bash
 make CONTAINER=podman image
 make CONTAINER=podman run
-make CONTAINER=podman validate
-```
-
-起動後に確認するURL:
-
-- `http://localhost:8080/`
-
-### Blume.dev版
-
-Blume.dev版を確認する場合だけ、明示的に `blume-*` ターゲットを使います。`docker/Dockerfile.blume` でBlumeのNode serverをビルドし、サイトとMCP endpointを `4321` に配信します。
-
-```bash
-make blume-image
-make blume-run
-```
-
-Podmanを使う場合:
-
-```bash
-make CONTAINER=podman blume-image
-make CONTAINER=podman blume-run
-make CONTAINER=podman blume-validate
 ```
 
 起動後に確認するURL:
 
 - `http://localhost:4321/`
 - `http://localhost:4321/mcp`
+- `http://localhost:4321/.well-known/mcp.json`
+- `http://localhost:4321/llms.txt`
 
-### AI/MCP試作
+## 検証
 
-MCPはBlume.dev版の内蔵MCP serverを使います。日本語検索を有効にするため、`blume.config.ts` では `i18n.defaultLocale: "ja"` を設定しています。
+Blumeのstrict buildを実行します。
 
-現時点のターゲットの使い分け:
+```bash
+make validate
+```
 
-| target | 内容 |
+MCPの日本語検索を検証します。
+
+```bash
+make test-mcp-search
+```
+
+Podmanを使う場合:
+
+```bash
+make CONTAINER=podman validate
+make CONTAINER=podman test-mcp-search
+```
+
+`test-mcp-search` はコンテナbuild内でBlume serverを起動し、`/mcp` の `search_docs` toolに日本語queryを投げます。次のような検索語で期待するページが返ることを確認します。
+
+| query | 期待するroute |
 | --- | --- |
-| `make image` / `make run` | MkDocs版 |
-| `make blume-image` / `make blume-run` | Blume.dev版とBlume内蔵MCP server |
+| `本番` | `/environments/production` |
+| `デプロイ` | `/procedures/deploy-application` |
+| `命名` | `/constraints/naming-conventions` |
+| `ロールバック` | `/procedures/rollback` |
+
+## AI/MCP設計
+
+MCPはBlume内蔵MCP serverを使います。日本語検索を有効にするため、`blume.config.ts` では `i18n.defaultLocale: "ja"` を設定しています。
+
+使う入口:
+
+| endpoint | 用途 |
+| --- | --- |
+| `/mcp` | AIエージェント向けMCP endpoint |
+| `/.well-known/mcp.json` | MCP endpoint discovery |
+| `/llms.txt` | AI向け軽量index |
+
+サーバは1コンテナです。Nginxコンテナ、Python MCP sidecar、別検索サーバは使いません。
 
 ## 執筆フロー
 
 1. `docs/` 配下のMarkdownを編集する。
 2. 必須frontmatterを更新する。
 3. チェックリスト項目は、正本となる制約ページまたは手順ページへリンクする。
-4. `make validate` でドキュメント運用ルールを検証する。
-5. イメージをビルドして、サイトを再生成する。
+4. `make validate` でBlume strict buildを実行する。
+5. `make test-mcp-search` でMCP日本語検索を確認する。
+6. イメージをビルドして、サイトを再生成する。
 
-## ドキュメント検証
+## ドキュメント運用ルール
 
-validatorの仕様は [validate_docs.py](tools/document-validator/validate_docs.py) に直接実装しています。
+執筆ルールと運用ルールは [ドキュメント運用ルール](docs/operations/document-operations.md) を参照してください。
 
-検出できるもの:
-
-- 必須frontmatterの不足
-- `id`、`type`、`owner`、`status`、`review_cycle` の不正値
-- `id` とMarkdown pathの不一致
-- `canonical_url` とMarkdown pathの不一致
-- `id` または `canonical_url` の重複
-- `last_reviewed` の形式不正、未来日、review期限切れ
-- pageが `mkdocs.yml` の `nav` に含まれていない状態
-- H1がない、H1が複数ある、H1とfrontmatter `title` が一致しない状態
-- checklist pageの各行が正本ドキュメントへlinkしていない状態
-- 存在しないMarkdown link
-- deprecated pageに `replaced_by` がない状態
-
-AI/RAG向けartifact生成とMCP serverは試作実装です。MCPはBlume内蔵MCP serverへ寄せています。設計方針は [AIエージェント向けアクセス設計](docs/design/ai-agent-access-plan.md) を参照してください。
+現在の自動検証はBlume strict buildとMCP検索smoke testです。frontmatter policyやlink policyをさらに厳密化する場合は、Blumeのcontent処理またはBlume向けvalidatorとして追加します。
 
 ## 主要ドキュメント
 
 - [要件とアーキテクチャ](docs/design/requirements-and-architecture.md)
+- [AIエージェント向けアクセス設計](docs/design/ai-agent-access-plan.md)
 - [ドキュメント運用ルール](docs/operations/document-operations.md)
 - [ページテンプレート](docs/authoring/page-template.md)

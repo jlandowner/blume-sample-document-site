@@ -1,21 +1,33 @@
-FROM python:3.12-slim AS builder
+FROM node:22-slim AS deps
 
 WORKDIR /workspace
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY package.json .
+RUN npm install --cache /tmp/npm-cache --no-audit --no-fund \
+  && rm -rf /tmp/npm-cache /root/.npm
 
-COPY mkdocs.yml .
+FROM deps AS builder
+
+COPY blume.config.ts .
 COPY docs ./docs
-COPY tools ./tools
-RUN python tools/document-validator/validate_docs.py
-RUN python tools/ai-artifacts/generate_ai_artifacts.py
-RUN mkdocs build --strict
+COPY tools/blume-poc ./tools/blume-poc
+RUN npm run blume:build
 
-FROM nginx:1.27-alpine
+FROM builder AS mcp-search-test
 
-COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder /workspace/site /usr/share/nginx/html
-COPY --from=builder /workspace/ai /usr/share/nginx/html/ai
+RUN npm run blume:test:mcp-search
 
-EXPOSE 8080
+FROM node:22-slim
+
+WORKDIR /app
+
+ENV HOST=0.0.0.0
+ENV PORT=4321
+
+COPY --from=deps /workspace/package.json ./package.json
+COPY --from=deps /workspace/node_modules ./node_modules
+COPY --from=builder /workspace/dist ./dist
+
+EXPOSE 4321
+
+CMD ["node", "dist/server/entry.mjs"]
