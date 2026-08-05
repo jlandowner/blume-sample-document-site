@@ -81,10 +81,12 @@ function extractHrefs(html) {
 }
 
 async function validateMarkdownLinks() {
-  const mdFiles = await walkFiles(docsDir, (path) => extname(path) === ".md");
+  const contentFiles = await walkFiles(docsDir, (path) =>
+    [".md", ".mdx"].includes(extname(path)),
+  );
   const relativeMarkdownLink = /\[[^\]]+\]\((?!https?:\/\/|#|\/|mailto:|tel:)([^)\s]+\.md(?:#[^)]+)?)\)/g;
 
-  for (const file of mdFiles) {
+  for (const file of contentFiles) {
     const text = await readFile(file, "utf8");
     let match;
     while ((match = relativeMarkdownLink.exec(text)) !== null) {

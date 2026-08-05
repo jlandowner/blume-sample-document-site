@@ -21,15 +21,18 @@ const removeDuplicateTitleHeading = (body, title) => {
   return body.replace(pattern, "");
 };
 
-const markdownFiles = async (dir) => {
+const contentFiles = async (dir) => {
   const entries = await readdir(dir, { withFileTypes: true });
   const files = [];
 
   for (const entry of entries) {
     const path = join(dir, entry.name);
     if (entry.isDirectory()) {
-      files.push(...(await markdownFiles(path)));
-    } else if (entry.isFile() && entry.name.endsWith(".md")) {
+      files.push(...(await contentFiles(path)));
+    } else if (
+      entry.isFile() &&
+      (entry.name.endsWith(".md") || entry.name.endsWith(".mdx"))
+    ) {
       files.push(path);
     }
   }
@@ -66,7 +69,7 @@ const sanitizeMarkdown = (text) => {
 
 await rm(outputDir, { force: true, recursive: true });
 
-for (const sourcePath of await markdownFiles(sourceDir)) {
+for (const sourcePath of await contentFiles(sourceDir)) {
   const filePath = relative(sourceDir, sourcePath);
   const outputPath = join(outputDir, filePath);
   const text = await readFile(sourcePath, "utf8");

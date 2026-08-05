@@ -1,0 +1,4 @@
+/* Blume caps code blocks at 24rem by default. This docs site shows full examples. */
+.prose :where(pre:not(.twoslash, .twoslash pre, blume-panel-tabs *) > code) {
+  max-height: none;
+}

@@ -9,6 +9,7 @@ RUN npm install --cache /tmp/npm-cache --no-audit --no-fund \
 FROM deps AS builder
 
 COPY blume.config.ts .
+COPY theme.css .
 COPY docs ./docs
 COPY public ./public
 COPY tools/blume-poc ./tools/blume-poc
