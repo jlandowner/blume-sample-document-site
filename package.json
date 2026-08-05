@@ -6,6 +6,7 @@
     "blume:prepare": "node tools/blume-poc/prepare-content.mjs",
     "blume:build": "npm run blume:prepare && blume build --strict",
     "blume:dev": "blume dev --host 0.0.0.0",
+    "blume:validate-links": "node tools/blume-poc/validate-links.mjs",
     "blume:test:mcp-search": "node tools/blume-poc/test-mcp-search.mjs"
   },
   "dependencies": {

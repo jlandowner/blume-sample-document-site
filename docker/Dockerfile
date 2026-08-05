@@ -17,6 +17,10 @@ FROM builder AS mcp-search-test
 
 RUN npm run blume:test:mcp-search
 
+FROM builder AS validator
+
+RUN npm run blume:validate-links
+
 FROM node:22-slim
 
 WORKDIR /app

@@ -52,7 +52,7 @@ canonical_url: /operations/document-operations/
 
 現在の検証:
 
-- `make validate`: Blume strict buildを実行する。
+- `make validate`: Blume strict buildと内部リンク検証を実行する。
 - `make test-mcp-search`: Blume MCP serverを起動し、日本語検索で期待routeが返ることを確認する。
 
 検出対象:
@@ -60,6 +60,8 @@ canonical_url: /operations/document-operations/
 - Blume build error。
 - navigationに含まれるpageの解決失敗。
 - Markdown/frontmatterのbuild時parse失敗。
+- Markdown内に相対 `.md` リンクが残っている状態。
+- 生成HTML内の内部リンクが存在しないpathへ解決される状態。
 - broken internal route。
 - MCP endpointの起動失敗。
 - `search_docs` の日本語queryで期待pageが返らない状態。

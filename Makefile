@@ -11,7 +11,7 @@ run: image
 	$(CONTAINER) run --rm -p $(PORT):4321 $(IMAGE)
 
 validate:
-	$(CONTAINER) build --target builder -f docker/Dockerfile -t $(IMAGE)-validator .
+	$(CONTAINER) build --target validator -f docker/Dockerfile -t $(IMAGE)-validator .
 
 test-mcp-search:
 	$(CONTAINER) build --target mcp-search-test -f docker/Dockerfile -t $(IMAGE)-mcp-search-test .

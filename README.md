@@ -36,11 +36,17 @@ make CONTAINER=podman run
 
 ## 検証
 
-Blumeのstrict buildを実行します。
+Blumeのstrict buildとリンク検証を実行します。
 
 ```bash
 make validate
 ```
+
+`validate` はコンテナbuild内で次を検出します。
+
+- Blume build error。
+- Markdown内の相対 `.md` リンク。
+- 生成HTML内の解決できない内部リンク。
 
 MCPの日本語検索を検証します。
 
@@ -142,7 +148,7 @@ curl -s http://localhost:4321/mcp \
 1. `docs/` 配下のMarkdownを編集する。
 2. 必須frontmatterを更新する。
 3. チェックリスト項目は、正本となる制約ページまたは手順ページへリンクする。
-4. `make validate` でBlume strict buildを実行する。
+4. `make validate` でBlume strict buildとリンク検証を実行する。
 5. `make test-mcp-search` でMCP日本語検索を確認する。
 6. イメージをビルドして、サイトを再生成する。
 
@@ -150,7 +156,7 @@ curl -s http://localhost:4321/mcp \
 
 執筆ルールと運用ルールは [ドキュメント運用ルール](docs/operations/document-operations.md) を参照してください。
 
-現在の自動検証はBlume strict buildとMCP検索smoke testです。frontmatter policyやlink policyをさらに厳密化する場合は、Blumeのcontent処理またはBlume向けvalidatorとして追加します。
+現在の自動検証はBlume strict build、内部リンク検証、MCP検索smoke testです。frontmatter policyをさらに厳密化する場合は、Blumeのcontent処理またはBlume向けvalidatorとして追加します。
 
 ## 主要ドキュメント
 
