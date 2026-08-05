@@ -24,7 +24,7 @@ canonical_url: /design/ai-agent-access-plan/
 
 AIエージェントが、K8sプラットフォームドキュメントを安全かつ安定して検索・取得できるようにします。
 
-人間向けのMkDocsサイトはそのまま維持し、同じMarkdown正本からAI向けartifactを生成します。AIエージェントはMCP server経由でartifactを読み、必要なpageを検索・取得します。
+人間向けサイトとAI向けMCP endpointはBlumeに統一します。AIエージェントはBlume MCPの検索・取得toolを使い、必要なpageを検索・取得します。
 
 ## 外部事例からの確認
 
@@ -35,119 +35,82 @@ GKE skillの例では、`SKILL.md` にQuick StartとReference Directoryを置き
 この構成から、今回のドキュメントサイトでも次の方針を採用します。
 
 - AI向け入口を薄く保ち、詳細知識は既存Markdown pageへ分離する。
-- trigger keyword、page metadata、chunk metadataを明示する。
-- agentが最初に読むindexを生成する。
-- agentが必要なpageだけを検索・取得できるMCP tools/resourcesを提供する。
+- trigger keyword、page metadata、heading、link構造を明示する。
+- agentが最初に読む軽量indexとして `llms.txt` を提供する。
+- agentが必要なpageだけを検索・取得できるMCP toolsを提供する。
 - RAG検索品質はMarkdownのfrontmatter、heading、link構造を直すことで改善する。
 
 ## 採用方針
 
-案2の **MCP Docs Server** を先に作ります。内部実装は案1のstatic artifactを読む形にします。
+AI向けアクセスはBlume内蔵MCP serverを採用します。独自Python server、別検索server、静的 `/ai` artifact生成は使いません。
 
 ```text
 Markdown docs
-  -> validator
-  -> ai artifact generator
-  -> MkDocs site
-  -> docs-web container
-  -> docs-mcp container
-  -> AI agent
+  -> Blume content preparation
+  -> Blume strict build
+  -> Blume Node server
+  -> Site users / AI agents
 ```
 
-MCP serverはMarkdownを直接parseしません。build時に生成されたartifactを読みます。これにより、AI用の検索・取得ロジックはsite buildと同じ正本から再現可能になります。
+MCP serverはBlumeのbuild outputに含まれます。これにより、AI用の検索・取得ロジックはsite buildと同じ正本から再現可能になります。
 
 ## 境界
 
-`/ai`、MCP、Skillの責務は分けます。
+Blume、MCP、Skillの責務は分けます。
 
 | 境界 | 責務 | 配布方法 |
 | --- | --- | --- |
-| `/ai` | build済みの機械向けartifactを配信する | docs-webのstatic path |
-| MCP | `/ai` artifactを読み、agent向けの検索・取得APIを提供する | docs-mcp container |
-| Skill | agentに「いつ、どのMCP toolを使うか」を教える薄い入口 | `/ai/skills/k8s-platform/SKILL.md` |
+| Blume site | 人間向けHTML、検索UI、`llms.txt` を提供する | Blume Node server |
+| MCP | agent向けの検索・取得APIを提供する | Blume Node serverの `/mcp` |
+| Skill | agentに「いつ、どのMCP toolを使うか」を教える薄い入口 | client側または別repoで静的配布 |
 
-Skillには全文を詰め込みません。検索結果のmatched sectionsで当たりを付け、本文はMCP経由でpage単位に取得します。
-
-## 生成artifact
-
-`ai/` 配下に次を生成します。
-
-| file | 用途 |
-| --- | --- |
-| `docs-index.json` | page単位のmetadata、source path、canonical URL、heading一覧 |
-| `chunks.jsonl` | heading単位の検索・引用用chunk |
-| `llms.txt` | agentが最初に読む軽量index |
-| `llms-full.txt` | 全文をまとめたfallback artifact |
-| `source/docs/**/*.md` | `docs/` のMarkdown正本をそのまま配信するraw source |
-| `skills/k8s-platform/SKILL.md` | 静的に管理するagent skill形式の入口 |
-| `skills/k8s-platform/references/*.md` | 静的に管理するtopic別のagent向け短い参照ガイド |
-
-`SKILL.md` は生成せず、repo内の静的ファイルとして管理します。Googleのskills構成に寄せ、次の情報を持たせます。
-
-```text
-name k8s-platform-docs
-description K8sプラットフォームの環境、制約、手順、API、ツール、チェックリスト、runbookを調べる。
-WHEN: deploy, rollback, secret, ingress, quota, production readiness, platform API, platformctl, troubleshooting.
-```
-
-## MCP resources
-
-MCP resourcesは、agentが「読む」ための安定URIとして提供します。
-
-| resource | 内容 |
-| --- | --- |
-| `docs://index` | `docs-index.json` |
-| `docs://llms` | `llms.txt` |
-| `docs://page/{id}` | `source/docs/**/*.md` から読んだpage単位のMarkdown正本 |
-| `docs://skill/k8s-platform` | 静的に管理された `SKILL.md` |
+このサンプルリポジトリではSkill配布物を持ちません。agentが読む本文はMCP経由でpage単位に取得します。
 
 ## MCP tools
 
-MCP toolsは、agentが「探す」ために使います。
+MCP toolsは、agentが「探す」「読む」ために使います。
 
 | tool | 入力 | 出力 |
 | --- | --- | --- |
-| `docs.search` | `query`, optional `type`, `tags`, `audience` | score付きpage候補とmatched sections |
-| `docs.get_page` | `id` | Markdown本文、metadata、canonical URL |
+| `search_docs` | `query`, optional `limit` | page候補、route、title、excerpt、URL |
+| `get_page` | `route` | Markdown本文 |
 
-初期検索は軽量なkeyword searchで実装します。vector searchやembeddingは第2段階にします。
+検索はBlumeの検索providerを使います。日本語検索のため、`blume.config.ts` で `i18n.defaultLocale: "ja"` を設定します。
 
-## MCP prompts
+## 日本語検索の検証
 
-agent向けのprompt templateも用意します。
+`make test-mcp-search` はコンテナbuild内でBlume serverを起動し、MCP endpoint `/mcp` に対して日本語queryを送ります。
 
-| prompt | 用途 |
+検証対象:
+
+| query | 期待するroute |
 | --- | --- |
-| `prepare_deployment_review` | production deploy前に必要なdoc/checklistを集める |
-| `investigate_failure` | 症状からrunbookと関連手順を集める |
-| `explain_platform_constraint` | 制約の正本、影響、確認方法をまとめる |
+| `本番` | `/environments/production` |
+| `デプロイ` | `/procedures/deploy-application` |
+| `命名` | `/constraints/naming-conventions` |
+| `ロールバック` | `/procedures/rollback` |
 
 ## container構成
 
-初期構成:
+構成は単一コンテナです。
 
 ```text
-docs-web
-  - MkDocs static siteを配信する。
-  - /ai/* artifactを配信する。
-
-docs-mcp
-  - /app/ai artifactを読み込む。
-  - Streamable HTTPまたはstdioでMCP serverを公開する。
+blume-docs
+  - Blume siteを配信する。
+  - /mcp でBlume内蔵MCP serverを公開する。
+  - /llms.txt を配信する。
 ```
 
-local developmentではstdio、cluster deploymentではStreamable HTTPを優先します。
+local developmentとcluster deploymentのどちらでも、同じHTTP endpointを使います。
 
 ## 実装ステップ
 
-1. `tools/ai-artifacts/generate_ai_artifacts.py` を追加する。
-2. `docs-index.json`、`chunks.jsonl`、`llms.txt`、`llms-full.txt` を生成する。
-3. 静的な `tools/ai-artifacts/skills/k8s-platform/SKILL.md` を `/ai/skills` にコピーする。
-4. `docs-web` imageに `/ai/*` を含める。
-5. `docs-mcp` serverを追加し、artifactを読む。
-6. `docs.search`、`docs.get_page` を先に実装する。
-7. 必要になった場合だけ、追加toolやpromptsを検討する。
-8. 生成artifactとMCP tool responseをvalidatorで検証する。
+1. `blume.config.ts` でMCPと `llms.txt` を有効化する。
+2. `i18n.defaultLocale: "ja"` を設定する。
+3. `docker/Dockerfile` でBlume buildとNode runtimeを定義する。
+4. `make validate` でstrict buildを実行する。
+5. `make test-mcp-search` でMCP日本語検索を検証する。
+6. 必要になった場合だけ、追加toolやpromptsを検討する。
 
 ## 非目標
 
@@ -157,9 +120,10 @@ local developmentではstdio、cluster deploymentではStreamable HTTPを優先�
 - agentがKubernetes APIを直接操作するtoolの提供。
 - 外部SaaS検索への依存。
 - HTMLをparseしてRAG sourceにすること。
+- Python MCP serverの保守。
 
 ## 判断
 
-最初に作るべきものは、artifact generatorとMCP Docs Serverです。GoogleのAgent Skills構成と同じく、agentが読む入口は小さく、詳細知識はtopic別referenceや既存Markdown pageへ分離します。
+最初に作るべきものは、Blume MCPを有効化した単一ドキュメントサイトです。agentが読む入口は小さく、詳細知識は既存Markdown pageへ分離します。
 
-この方針なら、人間向けサイト、agent skill、MCP resource、RAG chunkがすべて同じMarkdown正本から生成されます。
+この方針なら、人間向けサイト、MCP tool response、`llms.txt` がすべて同じMarkdown正本から生成されます。

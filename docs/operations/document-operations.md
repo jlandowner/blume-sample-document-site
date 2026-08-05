@@ -48,28 +48,30 @@ canonical_url: /operations/document-operations/
 
 ## 自動検証ルール
 
-ドキュメント検証の仕様は `tools/document-validator/validate_docs.py` に直接実装しています。ホストにPython packageを入れず、DockerまたはPodmanのbuild内で実行します。
+ホストに依存packageを入れず、DockerまたはPodmanのbuild内で検証します。
+
+現在の検証:
+
+- `make validate`: Blume strict buildを実行する。
+- `make test-mcp-search`: Blume MCP serverを起動し、日本語検索で期待routeが返ることを確認する。
 
 検出対象:
 
-- 必須frontmatterの不足。
-- `id`、`type`、`owner`、`status`、`review_cycle` の不正値。
-- `id` とMarkdown pathの不一致。
-- `canonical_url` とMarkdown pathの不一致。
-- `id` または `canonical_url` の重複。
-- `last_reviewed` の形式不正、未来日、review期限切れ。
-- pageが `mkdocs.yml` の `nav` に含まれていない状態。
-- H1がない、H1が複数ある、H1とfrontmatter `title` が一致しない状態。
-- checklist pageの各行が正本ドキュメントへlinkしていない状態。
-- 存在しないMarkdown link。
-- deprecated pageに `replaced_by` がない状態。
+- Blume build error。
+- navigationに含まれるpageの解決失敗。
+- Markdown/frontmatterのbuild時parse失敗。
+- broken internal route。
+- MCP endpointの起動失敗。
+- `search_docs` の日本語queryで期待pageが返らない状態。
 
 検証できないもの:
 
 - コマンドが実際に成功するか。
 - 設計判断や制約内容が業務的に正しいか。
 - 外部URLが到達可能か。
-- RAG検索品質が十分か。
+- frontmatter policyの全項目が業務ルールに沿っているか。
+
+frontmatter policy、review期限、チェックリストlinkの厳密検証が必要になった場合は、Blume向けvalidatorとして追加します。その場合もホストではなくコンテナbuild内で実行します。
 
 ## Pull requestチェックリスト
 
@@ -79,5 +81,6 @@ canonical_url: /operations/document-operations/
 - linkが解決できる。
 - commandがcopy可能で、対象環境が明確である。
 - checklistが正本ドキュメントへリンクしている。
-- validatorが成功する。
+- `make validate` が成功する。
+- `make test-mcp-search` が成功する。
 - review dateとownerが正しい。
