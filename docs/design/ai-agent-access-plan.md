@@ -107,7 +107,7 @@ local developmentとcluster deploymentのどちらでも、同じHTTP endpoint�
 
 1. `blume.config.ts` でMCPと `llms.txt` を有効化する。
 2. `i18n.defaultLocale: "ja"` を設定する。
-3. `docker/Dockerfile` でBlume buildとNode runtimeを定義する。
+3. `Dockerfile` でBlume buildとNode runtimeを定義する。
 4. `make validate` でstrict buildを実行する。
 5. `make test-mcp-search` でMCP日本語検索を検証する。
 6. 必要になった場合だけ、追加toolやpromptsを検討する。
