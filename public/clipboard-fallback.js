@@ -1,3 +1,8 @@
+/*
+ * Blume 標準のコピー処理は HTTPS などの secure context で navigator.clipboard を使う。
+ * ローカルネットワーク向けの HTTP 公開では失敗するため、execCommand によるフォールバックで
+ * コードブロックのコピーボタンを動作させる。
+ */
 (() => {
   const copiedText = () => document.body?.dataset.i18nCopied || "Copied!";
   const copyText = async (text) => {

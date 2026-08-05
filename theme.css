@@ -1,6 +1,6 @@
 /*
- * Code blocks use Blume's default 24rem height cap.
- * Add className="docs-code-full" to page content or a specific block to show full examples.
+ * コードブロックは Blume 標準の 24rem 高さ制限をデフォルトとする。
+ * ページ全体または特定ブロックに className="docs-code-full" を付けると、長い例を全文表示できる。
  */
 .docs-code-full {
   --docs-code-max-height: none;
