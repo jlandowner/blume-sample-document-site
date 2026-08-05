@@ -10,6 +10,7 @@ FROM deps AS builder
 
 COPY blume.config.ts .
 COPY docs ./docs
+COPY public ./public
 COPY tools/blume-poc ./tools/blume-poc
 RUN npm run blume:build
 

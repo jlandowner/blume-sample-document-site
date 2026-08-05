@@ -105,4 +105,12 @@ export default defineConfig({
   search: {
     provider: "orama",
   },
+  analytics: {
+    scripts: [
+      {
+        src: "/clipboard-fallback.js",
+        strategy: "defer",
+      },
+    ],
+  },
 });
