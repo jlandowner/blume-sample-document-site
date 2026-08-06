@@ -4,7 +4,7 @@ import { basename, join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
 const rootConfigPath = resolve(process.argv[2] || "blume.config.ts");
-const outputConfigPath = resolve(process.argv[3] || "blume.config.js");
+const outputConfigPath = resolve(process.argv[3] || "blume.config.ts");
 const siteUrl =
   process.env.BLUME_SITE_URL || "https://sample-document-site.pages.dev";
 

@@ -17,17 +17,17 @@ RUN npm install --cache /tmp/npm-cache --no-audit --no-fund \
 # 静的ビルドターゲット
 # -----------------------------------------------------------------------------
 # root の blume.config.ts を元にして、Pages 用の差分だけを上書きする。
-# 生成された blume.config.js はコンテナ内だけに作る。
+# 生成された blume.config.ts はコンテナ内だけに作る。
 FROM deps AS pages-build
 
-COPY blume.config.ts .
+COPY blume.config.ts ./blume.config.source.ts
 COPY theme.css .
 COPY docs ./docs
 COPY public ./public
 COPY scripts ./scripts
 COPY hack/convert-blume-config-for-pages.mjs ./hack/convert-blume-config-for-pages.mjs
-RUN node hack/convert-blume-config-for-pages.mjs blume.config.ts blume.config.js \
-  && rm blume.config.ts
+RUN node hack/convert-blume-config-for-pages.mjs blume.config.source.ts blume.config.ts \
+  && rm blume.config.source.ts
 RUN node scripts/prepare-content.mjs
 RUN npx blume build --strict
 
