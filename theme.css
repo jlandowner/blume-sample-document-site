@@ -10,3 +10,11 @@
   :where(pre:not(.twoslash, .twoslash pre, blume-panel-tabs *) > code) {
   max-height: var(--docs-code-max-height);
 }
+
+/*
+ * MCP 接続メニューでは Cursor のインストールリンクだけを非表示にする。
+ * MCP サーバ自体と、URL・Claude Code・Codex・VS Code の項目は残す。
+ */
+[data-blume-page-actions] [data-mcp-cursor] {
+  display: none;
+}
