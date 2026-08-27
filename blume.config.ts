@@ -19,6 +19,7 @@ export default defineConfig({
   },
   ai: {
     llmsTxt: true,
+    openInChat: ["chatgpt", "claude"],
     mcp: {
       enabled: true,
       instructions:

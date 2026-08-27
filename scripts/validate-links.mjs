@@ -79,13 +79,18 @@ async function buildRouteSet() {
   return routes;
 }
 
-// HTML から href 属性だけを抽出する。リンク検証用途なので HTML パーサまでは使わない。
+// script/style 内の文字列を除外し、リンク要素の href 属性だけを抽出する。
 function extractHrefs(html) {
   const hrefs = [];
-  const pattern = /\bhref=(["'])(.*?)\1/gis;
-  let match;
-  while ((match = pattern.exec(html)) !== null) {
-    hrefs.push(match[2].trim());
+  const markup = html
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "")
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, "");
+  const elementPattern = /<(?:a|area|link)\b[^>]*>/gis;
+  const hrefPattern = /\bhref\s*=\s*(["'])(.*?)\1/is;
+
+  for (const element of markup.match(elementPattern) ?? []) {
+    const match = hrefPattern.exec(element);
+    if (match) hrefs.push(match[2].trim());
   }
   return hrefs;
 }
